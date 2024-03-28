@@ -1,0 +1,251 @@
+running py2app
+creating /Users/mitchellchase/VSCodeProjects/MusicEncoder/build/bdist.macosx-14.1-arm64/python3.9-standalone/app
+creating /Users/mitchellchase/VSCodeProjects/MusicEncoder/build/bdist.macosx-14.1-arm64/python3.9-standalone/app/collect
+creating /Users/mitchellchase/VSCodeProjects/MusicEncoder/build/bdist.macosx-14.1-arm64/python3.9-standalone/app/temp
+creating build/bdist.macosx-14.1-arm64/python3.9-standalone/app/lib-dynload
+creating build/bdist.macosx-14.1-arm64/python3.9-standalone/app/Frameworks
+/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/modulegraph/find_modules.py:249: UserWarning: No package named pdfminer.six
+  warn("No package named %s" % f)
+{'ImtImagePlugin', 'WmfImagePlugin', 'DdsImagePlugin', 'TgaImagePlugin', 'MspImagePlugin', 'PsdImagePlugin', 'FitsImagePlugin', 'FliImagePlugin', 'MpegImagePlugin', 'ImImagePlugin', 'DcxImagePlugin', 'SgiImagePlugin', 'SunImagePlugin', 'McIdasImagePlugin', 'WebPImagePlugin', 'XVThumbImagePlugin', 'IcoImagePlugin', 'PpmImagePlugin', 'BufrStubImagePlugin', 'IptcImagePlugin', 'PixarImagePlugin', 'Jpeg2KImagePlugin', 'FtexImagePlugin', 'GribStubImagePlugin', 'IcnsImagePlugin', 'PcdImagePlugin', 'MpoImagePlugin', 'XbmImagePlugin', 'PalmImagePlugin', 'XpmImagePlugin', 'MicImagePlugin', 'Hdf5StubImagePlugin', 'PdfImagePlugin', 'TiffImagePlugin', 'FpxImagePlugin', 'BlpImagePlugin', 'BmpImagePlugin', 'PcxImagePlugin', 'GifImagePlugin', 'JpegImagePlugin', 'CurImagePlugin', 'EpsImagePlugin', 'QoiImagePlugin', 'PngImagePlugin', 'GbrImagePlugin', 'SpiderImagePlugin'}
+*** using recipe: PIL *** {'prescripts': ['py2app.recipes.PIL.prescript', <_io.StringIO object at 0x1079f5f70>], 'include': 'PIL.JpegPresets', 'flatpackages': ['/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/PIL']}
+*** using recipe: automissing *** {'expected_missing_imports': {'_winapi', '_frozen_importlib_external', 'winreg', 'sys.getwindowsversion', 'nt', 'win32wnet', 'netbios'}}
+*** using recipe: autopackages *** {'packages': ['numpy']}
+--- Skipping recipe black ---
+CTYPES USERS [SourceModule('ctypes._endian', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/ctypes/_endian.py'), Package('test.support', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/test/support/__init__.py', ['/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/test/support']), SourceModule('ctypes.wintypes', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/ctypes/wintypes.py'), Package('ctypes.macholib', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/ctypes/macholib/__init__.py', ['/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/ctypes/macholib']), SourceModule('ctypes._aix', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/ctypes/_aix.py'), SourceModule('ctypes.util', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/ctypes/util.py'), SourceModule('multiprocessing.sharedctypes', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/multiprocessing/sharedctypes.py'), SourceModule('packaging._manylinux', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/packaging/_manylinux.py'), SourceModule('setuptools.windows_support', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/setuptools/windows_support.py'), SourceModule('numpy.distutils._shell_utils', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/numpy/distutils/_shell_utils.py'), SourceModule('numpy.core._dtype_ctypes', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/numpy/core/_dtype_ctypes.py'), SourceModule('numpy.core._internal', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/numpy/core/_internal.py'), SourceModule('numpy.ctypeslib', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/numpy/ctypeslib.py'), Script('/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/py2app/bootstrap/argv_emulation.py',), SourceModule('pygame.tests.test_utils.async_sub', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/pygame/tests/test_utils/async_sub.py'), SourceModule('pygame.tests.freetype_test', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/pygame/tests/freetype_test.py'), SourceModule('pygame.tests.test_utils.arrinter', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/pygame/tests/test_utils/arrinter.py'), SourceModule('pygame.tests.test_utils.buftools', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/pygame/tests/test_utils/buftools.py'), SourceModule('pygame.tests.bufferproxy_test', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/pygame/tests/bufferproxy_test.py'), SourceModule('pygame.tests.color_test', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/pygame/tests/color_test.py'), SourceModule('pygame.tests.base_test', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/pygame/tests/base_test.py'), SourceModule('pygame.tests.pixelcopy_test', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/pygame/tests/pixelcopy_test.py'), SourceModule('pygame.tests.mixer_test', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/pygame/tests/mixer_test.py'), SourceModule('pygame.tests.surface_test', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/pygame/tests/surface_test.py'), SourceModule('pygame.examples.glcube', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/pygame/examples/glcube.py'), SourceModule('pydub.pyaudioop', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/pydub/pyaudioop.py'), SourceModule('numpy.core.tests.test_multiarray', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/numpy/core/tests/test_multiarray.py'), SourceModule('numpy.core.tests.test_umath_accuracy', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/numpy/core/tests/test_umath_accuracy.py'), SourceModule('numpy.core.tests.test_ufunc', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/numpy/core/tests/test_ufunc.py'), SourceModule('numpy.core.tests.test_casting_unittests', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/numpy/core/tests/test_casting_unittests.py'), SourceModule('numpy.core.tests.test_dtype', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/numpy/core/tests/test_dtype.py'), SourceModule('numpy.tests.test_public_api', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/numpy/tests/test_public_api.py'), SourceModule('numpy.tests.test_ctypeslib', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/numpy/tests/test_ctypeslib.py'), SourceModule('numpy.lib.tests.test_io', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/numpy/lib/tests/test_io.py'), SourceModule('numpy.random.tests.test_direct', '/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/numpy/random/tests/test_direct.py')]
+*** using recipe: ctypes *** {'prescripts': ['py2app.bootstrap.ctypes_setup']}
+--- Skipping recipe black ---
+*** using recipe: detect_dunder_file *** {'packages': {'PyQt5', 'pygame', 'cffi', 'pdfminer', 'numpy'}}
+--- Skipping recipe black ---
+*** using recipe: ftplib *** {}
+--- Skipping recipe black ---
+--- Skipping recipe gcloud ---
+--- Skipping recipe lxml ---
+--- Skipping recipe matplotlib ---
+*** using recipe: multiprocessing *** {'prescripts': [<_io.StringIO object at 0x10660eee0>]}
+--- Skipping recipe black ---
+--- Skipping recipe gcloud ---
+--- Skipping recipe lxml ---
+--- Skipping recipe matplotlib ---
+--- Skipping recipe opencv ---
+--- Skipping recipe pandas ---
+--- Skipping recipe platformdirs ---
+--- Skipping recipe pydantic ---
+*** using recipe: pydoc *** {}
+--- Skipping recipe black ---
+--- Skipping recipe gcloud ---
+--- Skipping recipe lxml ---
+--- Skipping recipe matplotlib ---
+--- Skipping recipe opencv ---
+--- Skipping recipe pandas ---
+--- Skipping recipe platformdirs ---
+--- Skipping recipe pydantic ---
+--- Skipping recipe pyenchant ---
+*** using recipe: pygame *** {'loader_files': [('pygame', <map object at 0x1067b9520>)]}
+--- Skipping recipe black ---
+--- Skipping recipe gcloud ---
+--- Skipping recipe lxml ---
+--- Skipping recipe matplotlib ---
+--- Skipping recipe opencv ---
+--- Skipping recipe pandas ---
+--- Skipping recipe platformdirs ---
+--- Skipping recipe pydantic ---
+--- Skipping recipe pyenchant ---
+--- Skipping recipe pylsp ---
+--- Skipping recipe pyopengl ---
+--- Skipping recipe pyside ---
+--- Skipping recipe pyside2 ---
+*** using recipe: pyside6 *** objc[4351]: Class QT_ROOT_LEVEL_POOL__THESE_OBJECTS_WILL_BE_RELEASED_WHEN_QAPP_GOES_OUT_OF_SCOPE is implemented in both /Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/PySide6/Qt/lib/QtCore.framework/Versions/A/QtCore (0x10c28d3a8) and /Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/PyQt5/Qt5/lib/QtCore.framework/Versions/5/QtCore (0x1115a92a8). One of the two will be used. Which one is undefined.
+objc[4351]: Class KeyValueObserver is implemented in both /Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/PySide6/Qt/lib/QtCore.framework/Versions/A/QtCore (0x10c28d3d0) and /Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/PyQt5/Qt5/lib/QtCore.framework/Versions/5/QtCore (0x1115a92d0). One of the two will be used. Which one is undefined.
+objc[4351]: Class RunLoopModeTracker is implemented in both /Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/PySide6/Qt/lib/QtCore.framework/Versions/A/QtCore (0x10c28d420) and /Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/PyQt5/Qt5/lib/QtCore.framework/Versions/5/QtCore (0x1115a9320). One of the two will be used. Which one is undefined.
+{'resources': ['/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/py2app/recipes/qt.conf'], 'packagse': ['PySide6']}
+--- Skipping recipe black ---
+--- Skipping recipe gcloud ---
+--- Skipping recipe lxml ---
+--- Skipping recipe matplotlib ---
+--- Skipping recipe opencv ---
+--- Skipping recipe pandas ---
+--- Skipping recipe platformdirs ---
+--- Skipping recipe pydantic ---
+--- Skipping recipe pyenchant ---
+--- Skipping recipe pylsp ---
+--- Skipping recipe pyopengl ---
+--- Skipping recipe pyside ---
+--- Skipping recipe pyside2 ---
+*** using recipe: qt5 *** {'packages': ['PyQt5'], 'expected_missing_imports': {'StringIO', 'cStringIO', 'copy_reg'}}
+--- Skipping recipe black ---
+--- Skipping recipe gcloud ---
+--- Skipping recipe lxml ---
+--- Skipping recipe matplotlib ---
+--- Skipping recipe opencv ---
+--- Skipping recipe pandas ---
+--- Skipping recipe platformdirs ---
+--- Skipping recipe pydantic ---
+--- Skipping recipe pyenchant ---
+--- Skipping recipe pylsp ---
+--- Skipping recipe pyopengl ---
+--- Skipping recipe pyside ---
+--- Skipping recipe pyside2 ---
+--- Skipping recipe qt6 ---
+--- Skipping recipe rtree ---
+*** using recipe: setuptools *** {'expected_missing_imports': {'pkg_resources.extern.packaging.tags', '__builtin__', 'pkg_resources.extern.packaging._compat', 'pkg_resources.extern.packaging.version', '__main__.__requires__', 'pkg_resources.extern.packaging._typing', 'pkg_resources.extern.packaging._structures', 'pkg_resources.extern.packaging.markers', 'pkg_resources.extern.packaging.utils', 'pkg_resources.extern.appdirs', 'pkg_resources.extern.packaging', 'pkg_resources.extern.packaging.requirements', 'pkg_resources.extern.pyparsing', 'pkg_resources.extern.packaging.__about__', 'pkg_resources.extern.packaging.specifiers'}, 'prescripts': [<_io.StringIO object at 0x10c4473a0>]}
+--- Skipping recipe black ---
+--- Skipping recipe gcloud ---
+--- Skipping recipe lxml ---
+--- Skipping recipe matplotlib ---
+--- Skipping recipe opencv ---
+--- Skipping recipe pandas ---
+--- Skipping recipe platformdirs ---
+--- Skipping recipe pydantic ---
+--- Skipping recipe pyenchant ---
+--- Skipping recipe pylsp ---
+--- Skipping recipe pyopengl ---
+--- Skipping recipe pyside ---
+--- Skipping recipe pyside2 ---
+--- Skipping recipe qt6 ---
+--- Skipping recipe rtree ---
+--- Skipping recipe shiboken2 ---
+*** using recipe: shiboken6 *** {'packages': ['shiboken6']}
+--- Skipping recipe black ---
+--- Skipping recipe gcloud ---
+--- Skipping recipe lxml ---
+--- Skipping recipe matplotlib ---
+--- Skipping recipe opencv ---
+--- Skipping recipe pandas ---
+--- Skipping recipe platformdirs ---
+--- Skipping recipe pydantic ---
+--- Skipping recipe pyenchant ---
+--- Skipping recipe pylsp ---
+--- Skipping recipe pyopengl ---
+--- Skipping recipe pyside ---
+--- Skipping recipe pyside2 ---
+--- Skipping recipe qt6 ---
+--- Skipping recipe rtree ---
+--- Skipping recipe shiboken2 ---
+--- Skipping recipe sip ---
+--- Skipping recipe six ---
+--- Skipping recipe sphinx ---
+--- Skipping recipe sqlalchemy ---
+*** using recipe: sslmod *** {'resources': [('openssl.ca', ['/opt/homebrew/etc/openssl@3/cert.pem', '/opt/homebrew/etc/openssl@3/certs'])], 'prescripts': [<_io.StringIO object at 0x10ab33e50>]}
+--- Skipping recipe black ---
+--- Skipping recipe gcloud ---
+--- Skipping recipe lxml ---
+--- Skipping recipe matplotlib ---
+--- Skipping recipe opencv ---
+--- Skipping recipe pandas ---
+--- Skipping recipe platformdirs ---
+--- Skipping recipe pydantic ---
+--- Skipping recipe pyenchant ---
+--- Skipping recipe pylsp ---
+--- Skipping recipe pyopengl ---
+--- Skipping recipe pyside ---
+--- Skipping recipe pyside2 ---
+--- Skipping recipe qt6 ---
+--- Skipping recipe rtree ---
+--- Skipping recipe shiboken2 ---
+--- Skipping recipe sip ---
+--- Skipping recipe six ---
+--- Skipping recipe sphinx ---
+--- Skipping recipe sqlalchemy ---
+--- Skipping recipe sysconfig_module ---
+*** using recipe: tkinter *** {'use_old_sdk': True}
+--- Skipping recipe black ---
+--- Skipping recipe gcloud ---
+--- Skipping recipe lxml ---
+--- Skipping recipe matplotlib ---
+--- Skipping recipe opencv ---
+--- Skipping recipe pandas ---
+--- Skipping recipe platformdirs ---
+--- Skipping recipe pydantic ---
+--- Skipping recipe pyenchant ---
+--- Skipping recipe pylsp ---
+--- Skipping recipe pyopengl ---
+--- Skipping recipe pyside ---
+--- Skipping recipe pyside2 ---
+--- Skipping recipe qt6 ---
+--- Skipping recipe rtree ---
+--- Skipping recipe shiboken2 ---
+--- Skipping recipe sip ---
+--- Skipping recipe six ---
+--- Skipping recipe sphinx ---
+--- Skipping recipe sqlalchemy ---
+--- Skipping recipe sysconfig_module ---
+*** using recipe: virtualenv *** {}
+--- Skipping recipe black ---
+--- Skipping recipe gcloud ---
+--- Skipping recipe lxml ---
+--- Skipping recipe matplotlib ---
+--- Skipping recipe opencv ---
+--- Skipping recipe pandas ---
+--- Skipping recipe platformdirs ---
+--- Skipping recipe pydantic ---
+--- Skipping recipe pyenchant ---
+--- Skipping recipe pylsp ---
+--- Skipping recipe pyopengl ---
+--- Skipping recipe pyside ---
+--- Skipping recipe pyside2 ---
+--- Skipping recipe qt6 ---
+--- Skipping recipe rtree ---
+--- Skipping recipe shiboken2 ---
+--- Skipping recipe sip ---
+--- Skipping recipe six ---
+--- Skipping recipe sphinx ---
+--- Skipping recipe sqlalchemy ---
+--- Skipping recipe sysconfig_module ---
+--- Skipping recipe wx ---
+*** using recipe: xml *** {}
+--- Skipping recipe black ---
+--- Skipping recipe gcloud ---
+--- Skipping recipe lxml ---
+--- Skipping recipe matplotlib ---
+--- Skipping recipe opencv ---
+--- Skipping recipe pandas ---
+--- Skipping recipe platformdirs ---
+--- Skipping recipe pydantic ---
+--- Skipping recipe pyenchant ---
+--- Skipping recipe pylsp ---
+--- Skipping recipe pyopengl ---
+--- Skipping recipe pyside ---
+--- Skipping recipe pyside2 ---
+--- Skipping recipe qt6 ---
+--- Skipping recipe rtree ---
+--- Skipping recipe shiboken2 ---
+--- Skipping recipe sip ---
+--- Skipping recipe six ---
+--- Skipping recipe sphinx ---
+--- Skipping recipe sqlalchemy ---
+--- Skipping recipe sysconfig_module ---
+--- Skipping recipe wx ---
+--- Skipping recipe zmq ---
+*** filtering dependencies ***
+3041 total
+44 filtered
+153 orphaned
+2997 remaining
+Traceback (most recent call last):
+  File "/Users/mitchellchase/VSCodeProjects/MusicEncoder/setup.py", line 10, in <module>
+    setup(
+  File "/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/setuptools/__init__.py", line 153, in setup
+    return distutils.core.setup(**attrs)
+  File "/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/distutils/core.py", line 148, in setup
+    dist.run_commands()
+  File "/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/distutils/dist.py", line 966, in run_commands
+    self.run_command(cmd)
+  File "/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/distutils/dist.py", line 985, in run_command
+    cmd_obj.run()
+  File "/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/py2app/build_app.py", line 987, in run
+    self._run()
+  File "/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/py2app/build_app.py", line 1217, in _run
+    self.run_normal()
+  File "/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/py2app/build_app.py", line 1329, in run_normal
+    pkgdirs = self.collect_packagedirs()
+  File "/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/py2app/build_app.py", line 1293, in collect_packagedirs
+    [
+  File "/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/py2app/build_app.py", line 1294, in <listcomp>
+    os.path.join(os.path.realpath(self.get_bootstrap(pkg)), "")
+  File "/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/py2app/build_app.py", line 2205, in get_bootstrap
+    bootstrap = imp_find_module(bootstrap)[1]
+  File "/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/site-packages/modulegraph/util.py", line 34, in imp_find_module
+    result = imp.find_module(name, path)
+  File "/Users/mitchellchase/.pyenv/versions/3.9.13/lib/python3.9/imp.py", line 296, in find_module
+    raise ImportError(_ERR_MSG.format(name), name=name)
+ImportError: No module named 'six'
