@@ -152,9 +152,11 @@ class TextToSoundConverterApp(QWidget):
 
     def stop_playback(self):
         pygame.mixer.music.stop()
+        # Add this line to quit the mixer after stopping the music.
+        pygame.mixer.quit()
         self.is_playing = False
         self.timer.stop()
-        logging.debug("Playback stopped.")
+        logging.debug("Mixer quit and playback stopped.")
 
     def create_download_button(self):
         download_button = QPushButton("Download WAV File", self)

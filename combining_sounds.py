@@ -105,15 +105,10 @@ import pygame
 
 
 def play_sound(sound_file, sound_type):
-    pygame.init()
-    pygame.mixer.init()
-
+    if not pygame.mixer.get_init():
+        pygame.mixer.init()
     if sound_file:
         final_sound_path = resource_path(os.path.join(sound_type, 'final.wav'))
-        try:
-            sound_file.export(final_sound_path, format="wav")
-            pygame.mixer.music.load(final_sound_path)
-            pygame.mixer.music.play()
-        except PermissionError as e:
-            logging.error(f"Permission denied when trying to export sound file: {e}")
-            # Optionally, handle the situation, e.g., by exporting to a temporary file
+        sound_file.export(final_sound_path, format="wav")
+        pygame.mixer.music.load(final_sound_path)
+        pygame.mixer.music.play()
