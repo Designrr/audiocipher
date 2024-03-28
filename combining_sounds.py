@@ -109,7 +109,7 @@ def play_sound(sound_file, sound_type):
     pygame.mixer.init()
 
     if sound_file:
-        final_sound_path = resource_path(os.path.join(sound_type, 'gap.wav'))
+        final_sound_path = resource_path(os.path.join(sound_type, 'final.wav'))
         sound_file.export(final_sound_path, format="wav")
         pygame.mixer.music.load(final_sound_path)
         pygame.mixer.music.play()

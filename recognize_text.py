@@ -130,10 +130,3 @@ def analyze_audio(sound, sound_map, sound_type):
 
     return recognized_text
 
-if __name__ == "__main__":
-    # Example usage: recognize from a sound file
-    sound_file_path = "path/to/your/sound/file.wav"
-    recognize_text_from_sound(sound_file_path)
-
-    # Uncomment the line below to recognize from the microphone
-    recognize_text_from_mic()

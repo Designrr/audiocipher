@@ -140,7 +140,7 @@ class TextToSoundConverterApp(QWidget):
             generated_sound = combining_sounds(text, sound_type=selected_text)
             play_sound(generated_sound, sound_type=selected_text)
             logging.debug(f"Starting playback for sound type: {selected_text}")
-            recognize_text_from_sound(f'{selected_text}/temp.wav', sound_type=selected_text)
+            recognize_text_from_sound(f'{selected_text}/final.wav', sound_type=selected_text)
             self.is_playing = True
             self.timer.start(100)
 
