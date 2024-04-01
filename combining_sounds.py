@@ -76,7 +76,7 @@ def combining_sounds(text, sound_type):
     sound_file = AudioSegment.silent(duration=0)
 
     # Correctly resolve the path for gap.wav using resource_path
-    gap_sound_path = resource_path(os.path.join(sound_type, 'gap.wav'))
+    gap_sound_path = resource_path(os.path.join(sound_type, 'gap.wav')) #.2 second gap
 
 
 

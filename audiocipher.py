@@ -27,11 +27,22 @@ class TextToSoundConverterApp(QWidget):
 
         self.is_playing = False  # Initialize is_playing flag
 
+        self.selected_sound_file_path = None
+
         # Set application icon
         icon_path = "MusicEncoderIcon.png"  # Replace with the actual path to your icon file
         self.setWindowIcon(QIcon(icon_path))
 
         self.init_ui()
+
+        self.typing_timer = QTimer(self)  # Timer for typing effect
+        self.typing_timer.timeout.connect(self.type_text)
+        self.text_to_type = ""  # Store the text that needs to be typed out
+        self.text_typed_for_current_file = False  # Tracks if text has been typed for the current file
+        self.playback_source = 'text'  # Tracks the source of playback ('file' or 'text')
+        self.current_typing_pos = 0  # Keep track of the current typing position
+        self.duration_per_character = 100  # Duration for each character in ms
+        self.gap_between_words = 200  # Additional gap between words in ms
 
     def init_ui(self):
         # Set a font for the QTextEdit
@@ -110,6 +121,11 @@ class TextToSoundConverterApp(QWidget):
         # Set the sound_type variable based on the selected text
         self.sound_type = selected_text
 
+    def get_sound_type(self):
+        selected_index = self.sound_type_combo.currentIndex()  # Get the current index
+        sound_type = self.sound_type_combo.itemText(selected_index)  # Get the text at that index
+        return sound_type
+
     """"
     def create_pdf_button(self):
         pdf_button = QPushButton("Open PDF", self)
@@ -131,18 +147,29 @@ class TextToSoundConverterApp(QWidget):
         self.main_layout.addWidget(self.start_button)
 
     def start_playback(self):
-        if self.is_playing:
+        pygame.mixer.init()
+        if pygame.mixer.music.get_busy():
             self.stop_playback()
         else:
-            text = self.text_entry.toPlainText()
-            selected_index = self.sound_type_combo.currentIndex()  # Get the current index
-            selected_text = self.sound_type_combo.itemText(selected_index)  # Get the text at that index
-            generated_sound = combining_sounds(text, sound_type=selected_text)
-            play_sound(generated_sound, sound_type=selected_text)
-            logging.debug(f"Starting playback for sound type: {selected_text}")
-            recognize_text_from_sound(f'{selected_text}/final.wav', sound_type=selected_text)
-            self.is_playing = True
-            self.timer.start(100)
+            self.current_typing_pos = 0  # Reset typing position
+            if self.selected_sound_file_path and not self.text_typed_for_current_file:
+                self.playback_source = 'file'
+                pygame.mixer.init()
+                pygame.mixer.music.load(self.selected_sound_file_path)
+                pygame.mixer.music.play()
+                if pygame.mixer.music.get_busy():  # Confirm playback started
+                    self.is_playing = True
+                logging.debug(f"Playing selected sound file: {self.selected_sound_file_path}")
+                self.text_typed_for_current_file = True
+            elif not self.selected_sound_file_path or self.playback_source == 'text':
+                text = self.text_entry.toPlainText()
+                if text:
+                    self.playback_source = 'text'
+                    # Assuming play_sound starts playback immediately
+                    play_sound(combining_sounds(text, sound_type=self.get_sound_type()), sound_type=self.get_sound_type())
+                    if pygame.mixer.music.get_busy():  # Confirm playback started
+                        self.is_playing = True
+                    logging.debug(f"Generated and started playback for text with sound type: {self.get_sound_type()}")
 
     def check_status(self):
         if pygame.mixer.music.get_busy():
@@ -151,12 +178,20 @@ class TextToSoundConverterApp(QWidget):
             self.stop_playback()
 
     def stop_playback(self):
-        pygame.mixer.music.stop()
-        # Add this line to quit the mixer after stopping the music.
-        pygame.mixer.quit()
+        # Safely stop the audio playback
+        if pygame.mixer.get_init():
+            pygame.mixer.music.stop()
+            pygame.mixer.quit()
+
         self.is_playing = False
-        self.timer.stop()
-        logging.debug("Mixer quit and playback stopped.")
+        self.timer.stop()  # Stop the timer for checking audio playback status
+
+        # Check if the typing_timer is active before trying to stop it
+        if self.typing_timer.isActive():
+            self.typing_timer.stop()
+
+        self.playback_source = 'test'  # Reset the playback source to None after stopping
+        logging.debug("Playback and typing effect stopped. Playback source reset.")
 
     def create_download_button(self):
         download_button = QPushButton("Download WAV File", self)
@@ -166,10 +201,11 @@ class TextToSoundConverterApp(QWidget):
     def download_wav_file(self):
         file_path, _ = QFileDialog.getSaveFileName(self, "Save WAV File", "", "WAV files (*.wav)")
         if file_path:
-            text = self.text_entry.toPlainText()  # Use toPlainText() instead of get("1.0", tk.END)
-            generated_sound = combining_sounds(text)
-
-            self.save_wav(file_path, generated_sound)
+            text = self.text_entry.toPlainText()
+            sound_type = self.get_sound_type()
+            combined_sound = combining_sounds(text, sound_type=sound_type)
+            # Use the export method of AudioSegment to save the combined audio
+            combined_sound.export(file_path, format="wav")
             print(f"Saving .wav file to: {file_path}")
 
     def create_sound_file_button(self):
@@ -177,10 +213,38 @@ class TextToSoundConverterApp(QWidget):
         sound_file_button.clicked.connect(self.select_sound_file)
         self.main_layout.addWidget(sound_file_button)
 
+
     def select_sound_file(self):
         sound_file_path, _ = QFileDialog.getOpenFileName(self, "Select Sound File", "", "Sound Files (*.wav;*.mp3)")
         if sound_file_path:
-            recognize_text_from_sound(sound_file_path)
+            self.selected_sound_file_path = sound_file_path
+            self.text_typed_for_current_file = False  # Reset typing state for new file
+            self.playback_source = 'file'  # Set playback source to file
+            # Recognize text and prepare for typing out without starting the typing timer here
+            recognized_text = recognize_text_from_sound(sound_file_path, sound_type=self.get_sound_type())
+            self.text_to_type = recognized_text
+            self.current_typing_pos = 0
+            logging.debug(f"Selected sound file: {sound_file_path}")
+    
+    def type_text(self):
+        if self.current_typing_pos < len(self.text_to_type):
+            next_char = self.text_to_type[self.current_typing_pos]
+            # Append the next character to the text box
+            self.text_entry.insertPlainText(next_char)
+            self.current_typing_pos += 1
+            
+            # If the next character is a space, simulate the gap between words
+            if next_char == " ":
+                self.typing_timer.start(self.gap_between_words)
+            else:
+                self.typing_timer.start(self.duration_per_character)
+        else:
+            # Stop the timer if the entire text has been typed out
+            self.typing_timer.stop()
+                
+    
+           
+   
 
 if __name__ == "__main__":
     app = QApplication([])
