@@ -77,8 +77,10 @@ class TextToSoundConverterApp(QWidget):
     def __init__(self):
         super().__init__()
 
+        self.scales = read_scales_from_file('.\morse\scales_frequencies.txt')  # Adjust the file path as necessary
         self.setWindowTitle("Text to Sound Converter")
         self.setGeometry(100, 100, 800, 600)
+        
 
         self.is_playing = False  # Initialize is_playing flag
         self.server = Server().boot()
@@ -149,8 +151,15 @@ class TextToSoundConverterApp(QWidget):
         self.sound_type_combo.addItem("modulated")
         self.sound_type_combo.addItem("beeps")
         self.sound_type_combo.addItem("non_human")
-        self.sound_type_combo.addItem("morse")
+        
+        # Morse dropdown
+        self.morse_scale_combo = QComboBox(self)
+        self.morse_scale_combo.addItems(self.scales.keys())
+        self.main_layout.addWidget(self.morse_scale_combo)
+
+        self.sound_type_combo.addItem("morse (select scale)")
         self.main_layout.addWidget(self.sound_type_combo)
+        self.morse_scale_combo.hide()  # Initially hide the Morse scale combo box
 
         self.sound_type_combo.currentIndexChanged.connect(self.update_sound_type)
 
@@ -163,9 +172,11 @@ class TextToSoundConverterApp(QWidget):
         self.timer.timeout.connect(self.check_status)
 
     def update_sound_type(self, index):
-        # Get the selected text from the combo box
         selected_text = self.sound_type_combo.itemText(index)
-        # Set the sound_type variable based on the selected text
+        if selected_text == "morse (select scale)":
+            self.morse_scale_combo.show()
+        else:
+            self.morse_scale_combo.hide()
         self.sound_type = selected_text
 
     """"
@@ -196,11 +207,12 @@ class TextToSoundConverterApp(QWidget):
             selected_index = self.sound_type_combo.currentIndex()  # Get the current index
             selected_text = self.sound_type_combo.itemText(selected_index)  # Get the text at that index
             if selected_text == "morse":
-                selected_scale = "C Major" # self.scale_var.get()
-                scale = read_scales_from_file('.\morse\scales_frequencies.txt')[selected_scale]
-                sines = {note: Sine(freq=freq, mul=1) for note, freq in scale.items()} 
+                selected_scale = self.morse_scale_combo.currentText()  # Get the selected scale
+                scale = self.scales[selected_scale]
+                sines = {note: Sine(freq=freq, mul=1) for note, freq in scale.items()}
                 sequence = morse_code_to_musical_sequence(text, scale)
                 play_sequence(sequence, sines)
+
             else:
                 generated_sound = combining_sounds(text, sound_type=selected_text)
                 play_sound(generated_sound, sound_type=selected_text)
