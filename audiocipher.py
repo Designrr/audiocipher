@@ -18,6 +18,61 @@ import os
 # Now use logging.debug() instead of print() throughout your script
 logging.debug(os.environ)
 
+from pyo import *
+import random
+import time
+
+# Function to read scales and frequencies from a text file
+def read_scales_from_file(file_path):
+    scales = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            scale_name, freq_str = line.strip().split(': ')
+            frequencies = [float(freq) for freq in freq_str.split(', ')]
+            scales[scale_name] = dict(zip(['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C5'], frequencies))
+    return scales
+
+# Morse code representations
+morse_code = {
+    'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 
+    'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+    'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.', 
+    'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 
+    'Y': '-.--', 'Z': '--..', ' ': ' ',
+    '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-', 
+    '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.'
+}
+
+
+# Convert Morse code to a sequence of notes and durations
+def morse_code_to_musical_sequence(message, scale):
+    sequence = []
+    for char in message.upper():
+        if char == ' ':
+            sequence.append(('R', 0.25))
+        elif char in morse_code:
+            for symbol in morse_code[char]:
+                note = random.choice(list(scale.keys()))
+                duration = 0.125 if symbol == '.' else 0.25
+                sequence.append((note, duration))
+            sequence.append(('R', 0.125))
+    sequence.append(('C', 0.5))
+    return sequence
+
+# Function to play a note
+def play_note(note, duration, sines):
+    sines[note].out()
+    time.sleep(duration)
+    sines[note].stop()
+
+# Play the musical sequence
+def play_sequence(sequence, sines):
+    for note, duration in sequence:
+        if note == 'R':
+            time.sleep(duration)
+        else:
+            play_note(note, duration, sines)
+
 class TextToSoundConverterApp(QWidget):
     def __init__(self):
         super().__init__()
@@ -26,6 +81,8 @@ class TextToSoundConverterApp(QWidget):
         self.setGeometry(100, 100, 800, 600)
 
         self.is_playing = False  # Initialize is_playing flag
+        self.server = Server().boot()
+        self.server.start()
 
         # Set application icon
         icon_path = "MusicEncoderIcon.png"  # Replace with the actual path to your icon file
@@ -92,6 +149,7 @@ class TextToSoundConverterApp(QWidget):
         self.sound_type_combo.addItem("modulated")
         self.sound_type_combo.addItem("beeps")
         self.sound_type_combo.addItem("non_human")
+        self.sound_type_combo.addItem("morse")
         self.main_layout.addWidget(self.sound_type_combo)
 
         self.sound_type_combo.currentIndexChanged.connect(self.update_sound_type)
@@ -137,12 +195,19 @@ class TextToSoundConverterApp(QWidget):
             text = self.text_entry.toPlainText()
             selected_index = self.sound_type_combo.currentIndex()  # Get the current index
             selected_text = self.sound_type_combo.itemText(selected_index)  # Get the text at that index
-            generated_sound = combining_sounds(text, sound_type=selected_text)
-            play_sound(generated_sound, sound_type=selected_text)
-            logging.debug(f"Starting playback for sound type: {selected_text}")
-            recognize_text_from_sound(f'{selected_text}/final.wav', sound_type=selected_text)
-            self.is_playing = True
-            self.timer.start(100)
+            if selected_text == "morse":
+                selected_scale = "C Major" # self.scale_var.get()
+                scale = read_scales_from_file('.\morse\scales_frequencies.txt')[selected_scale]
+                sines = {note: Sine(freq=freq, mul=1) for note, freq in scale.items()} 
+                sequence = morse_code_to_musical_sequence(text, scale)
+                play_sequence(sequence, sines)
+            else:
+                generated_sound = combining_sounds(text, sound_type=selected_text)
+                play_sound(generated_sound, sound_type=selected_text)
+                logging.debug(f"Starting playback for sound type: {selected_text}")
+                recognize_text_from_sound(f'{selected_text}/final.wav', sound_type=selected_text)
+                self.is_playing = True
+                self.timer.start(100)
 
     def check_status(self):
         if pygame.mixer.music.get_busy():
