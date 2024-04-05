@@ -170,12 +170,13 @@ class TextToSoundConverterApp(QWidget):
                 sines = {note: Sine(freq=freq, mul=1) for note, freq in scale.items()}
                 sequence = morse_code_to_musical_sequence(text, scale)
                 play_sequence(sequence, sines)
+                self.is_playing = True
+                self.timer.start(100)
 
             else:
                 generated_sound = combining_sounds(text, sound_type=selected_text)
                 play_sound(generated_sound, sound_type=selected_text)
                 logging.debug(f"Starting playback for sound type: {selected_text}")
-                recognize_text_from_sound(f'{selected_text}/final.wav', sound_type=selected_text)
                 self.is_playing = True
                 self.timer.start(100)
 
