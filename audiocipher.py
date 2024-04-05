@@ -185,34 +185,47 @@ class TextToSoundConverterApp(QWidget):
                         self.timer.timeout.connect(self.check_status)
                         self.timer.start(100)
                     else:
-                        logging.debug("Timer is already started.")
+                        logging.debug("Timer is already active.")
 
 
 
     def check_status(self):
-        if pygame.mixer.music.get_busy():
-            None
+        logging.debug(f"Checking playback status... Mixer initialized: {pygame.mixer.get_init()}")
+        if pygame.mixer.get_init():
+            if pygame.mixer.music.get_busy():
+                logging.debug("Playback is still active.")
+            else:
+                logging.debug("Playback has completed. Stopping playback.")
+                self.stop_playback()
         else:
-            self.timer.stop()
-            self.stop_playback()
+            logging.error("Mixer is not initialized. Unable to check playback status.")
+
 
     def stop_playback(self):
-
-        # Attempt to safely stop the audio playback
+        logging.debug("Stopping playback...")
         if pygame.mixer.get_init():
             pygame.mixer.music.stop()
             pygame.mixer.quit()
-            logging.debug("Successfully stopped and quit mixer.")
+            logging.debug("Mixer stopped and quit successfully.")
+        else:
+            logging.debug("Mixer was not initialized at the time of stopping playback.")
+
+        self.is_playing = False
         
-        self.is_playing = False  # Immediately reflect playback has been intended to stop
-        self.timer.stop()
+        if self.timer.isActive():
+            logging.debug("Stopping the timer.")
+            self.timer.stop()
+        else:
+            logging.debug("Timer was not active at the time of stopping playback.")
 
         if self.typing_timer.isActive():
-            self.typing_timer.stop()  # Ensure typing effect is also stopped
+            logging.debug("Stopping the typing effect timer.")
+            self.typing_timer.stop()
+        else:
+            logging.debug("Typing effect timer was not active.")
 
-        # Reset playback source as appropriate
-        self.playback_source = None  # Consider resetting this based on your logic needs
-        logging.debug("Playback and typing effect stopped. Playback source and state reset.")
+        self.playback_source = None
+        logging.debug("Playback source reset. Playback and typing effect stopped.")
 
 
     def create_download_button(self):
