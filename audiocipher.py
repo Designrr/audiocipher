@@ -10,74 +10,32 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QPush
 from PyQt5.QtGui import QFont, QIcon
 from PyQt5.QtCore import QTimer
 import pygame
+from pyo import *
 from combining_sounds import combining_sounds, play_sound
 from recognize_text import recognize_text_from_sound, recognize_text_from_mic
+from morse_playback import read_scales_from_file, morse_code_to_musical_sequence, play_sequence
 from pdfminer.high_level import extract_text
 import os
 
 # Now use logging.debug() instead of print() throughout your script
 logging.debug(os.environ)
 
-from pyo import *
-import random
-import time
-
-# Function to read scales and frequencies from a text file
-def read_scales_from_file(file_path):
-    scales = {}
-    with open(file_path, 'r') as file:
-        for line in file:
-            scale_name, freq_str = line.strip().split(': ')
-            frequencies = [float(freq) for freq in freq_str.split(', ')]
-            scales[scale_name] = dict(zip(['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C5'], frequencies))
-    return scales
-
-# Morse code representations
-morse_code = {
-    'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.', 
-    'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
-    'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.', 
-    'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-', 
-    'Y': '-.--', 'Z': '--..', ' ': ' ',
-    '0': '-----', '1': '.----', '2': '..---', '3': '...--', '4': '....-', 
-    '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.'
-}
-
-
-# Convert Morse code to a sequence of notes and durations
-def morse_code_to_musical_sequence(message, scale):
-    sequence = []
-    for char in message.upper():
-        if char == ' ':
-            sequence.append(('R', 0.25))
-        elif char in morse_code:
-            for symbol in morse_code[char]:
-                note = random.choice(list(scale.keys()))
-                duration = 0.125 if symbol == '.' else 0.25
-                sequence.append((note, duration))
-            sequence.append(('R', 0.125))
-    sequence.append(('C', 0.5))
-    return sequence
-
-# Function to play a note
-def play_note(note, duration, sines):
-    sines[note].out()
-    time.sleep(duration)
-    sines[note].stop()
-
-# Play the musical sequence
-def play_sequence(sequence, sines):
-    for note, duration in sequence:
-        if note == 'R':
-            time.sleep(duration)
-        else:
-            play_note(note, duration, sines)
 
 class TextToSoundConverterApp(QWidget):
     def __init__(self):
         super().__init__()
 
-        self.scales = read_scales_from_file('.\morse\scales_frequencies.txt')  # Adjust the file path as necessary
+        # Define the base directory for file paths
+        # If the application is frozen (i.e., packaged by PyInstaller), use sys._MEIPASS
+        # Otherwise, use the directory of this script file
+        base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+
+        # Construct the path to the scales_frequencies.txt file
+        scales_frequencies_path = os.path.join(base_dir, 'morse', 'scales_frequencies.txt')
+
+        # Now use the resolved path to read the scales from the file
+        self.scales = read_scales_from_file(scales_frequencies_path)
+        
         self.setWindowTitle("Text to Sound Converter")
         self.setGeometry(100, 100, 800, 600)
         
@@ -206,7 +164,7 @@ class TextToSoundConverterApp(QWidget):
             text = self.text_entry.toPlainText()
             selected_index = self.sound_type_combo.currentIndex()  # Get the current index
             selected_text = self.sound_type_combo.itemText(selected_index)  # Get the text at that index
-            if selected_text == "morse":
+            if selected_text == "morse (select scale)":
                 selected_scale = self.morse_scale_combo.currentText()  # Get the selected scale
                 scale = self.scales[selected_scale]
                 sines = {note: Sine(freq=freq, mul=1) for note, freq in scale.items()}
