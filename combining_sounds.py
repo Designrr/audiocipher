@@ -67,8 +67,8 @@ def mapping_sounds(sound_type):
     # Construct full paths for sound files using resource_path to ensure correct paths in all environments
     sounds = {char: resource_path(os.path.join(sounds_base_dir, f"{filename}.wav")) for char, filename in symbol_filenames.items()}
 
-    logging.debug(f"Sounds base directory: {sounds_base_dir}")
-    logging.debug(f"Sound file paths: {sounds}")
+    #logging.debug(f"Sounds base directory: {sounds_base_dir}")
+    #logging.debug(f"Sound file paths: {sounds}")
     return sounds
 
 

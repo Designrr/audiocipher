@@ -147,51 +147,73 @@ class TextToSoundConverterApp(QWidget):
         self.main_layout.addWidget(self.start_button)
 
     def start_playback(self):
-        pygame.mixer.init()
-        if pygame.mixer.music.get_busy():
+        logging.debug("Attempting to start playback...")
+        if self.is_playing:
+            logging.debug("Playback is already in progress. Stopping current playback.")
             self.stop_playback()
         else:
-            self.current_typing_pos = 0  # Reset typing position
+            # Initiate playback
+            self.current_typing_pos = 0  # Always reset typing position when starting playback
+            
             if self.selected_sound_file_path and not self.text_typed_for_current_file:
-                self.playback_source = 'file'
+                # Handling playback from a selected sound file
                 pygame.mixer.init()
                 pygame.mixer.music.load(self.selected_sound_file_path)
                 pygame.mixer.music.play()
-                if pygame.mixer.music.get_busy():  # Confirm playback started
-                    self.is_playing = True
-                logging.debug(f"Playing selected sound file: {self.selected_sound_file_path}")
+                logging.debug(f"Attempting to play selected sound file: {self.selected_sound_file_path}")
+                self.is_playing = True  # Assume playback starts successfully
+                if not self.timer.isActive():
+                    logging.debug("Connecting timer to check_status and starting the timer.")  
+                    self.timer.timeout.connect(self.check_status)
+                    self.timer.start(100)
+                else:
+                    logging.debug("Timer is already active.")
+                self.text_entry.clear()
+                self.type_text()  # Start typing effect
                 self.text_typed_for_current_file = True
             elif not self.selected_sound_file_path or self.playback_source == 'text':
+                # Handling playback from text
                 text = self.text_entry.toPlainText()
                 if text:
                     self.playback_source = 'text'
-                    # Assuming play_sound starts playback immediately
-                    play_sound(combining_sounds(text, sound_type=self.get_sound_type()), sound_type=self.get_sound_type())
-                    if pygame.mixer.music.get_busy():  # Confirm playback started
-                        self.is_playing = True
-                    logging.debug(f"Generated and started playback for text with sound type: {self.get_sound_type()}")
+                    generated_sound = combining_sounds(text, sound_type=self.get_sound_type())
+                    play_sound(generated_sound, sound_type=self.get_sound_type())
+                    logging.debug(f"Attempting to generate and play sound for text with sound type: {self.get_sound_type()}")
+                    self.is_playing = True  # Assume playback starts successfully
+                    if not self.timer.isActive():
+                        logging.debug("Connecting timer to check_status and starting the timer.") 
+                        self.timer.timeout.connect(self.check_status)
+                        self.timer.start(100)
+                    else:
+                        logging.debug("Timer is already started.")
+
+
 
     def check_status(self):
         if pygame.mixer.music.get_busy():
-            self.timer.start(100)
+            None
         else:
+            self.timer.stop()
             self.stop_playback()
 
     def stop_playback(self):
-        # Safely stop the audio playback
+
+        # Attempt to safely stop the audio playback
         if pygame.mixer.get_init():
             pygame.mixer.music.stop()
             pygame.mixer.quit()
+            logging.debug("Successfully stopped and quit mixer.")
+        
+        self.is_playing = False  # Immediately reflect playback has been intended to stop
+        self.timer.stop()
 
-        self.is_playing = False
-        self.timer.stop()  # Stop the timer for checking audio playback status
-
-        # Check if the typing_timer is active before trying to stop it
         if self.typing_timer.isActive():
-            self.typing_timer.stop()
+            self.typing_timer.stop()  # Ensure typing effect is also stopped
 
-        self.playback_source = 'test'  # Reset the playback source to None after stopping
-        logging.debug("Playback and typing effect stopped. Playback source reset.")
+        # Reset playback source as appropriate
+        self.playback_source = None  # Consider resetting this based on your logic needs
+        logging.debug("Playback and typing effect stopped. Playback source and state reset.")
+
 
     def create_download_button(self):
         download_button = QPushButton("Download WAV File", self)
