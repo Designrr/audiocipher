@@ -107,7 +107,7 @@ class TextToSoundConverterApp(QWidget):
         # Create dropdown menu
         self.sound_type_combo = QComboBox(self)
         self.sound_type_combo.addItem("modulated")
-        self.sound_type_combo.addItem("beeps")
+        #self.sound_type_combo.addItem("beeps")
         self.sound_type_combo.addItem("non_human")
         
         # Morse dropdown
