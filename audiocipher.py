@@ -45,9 +45,10 @@ class TextToSoundConverterApp(QWidget):
         
         self.selected_sound_file = None
 
-        self.is_playing = False  # Initialize is_playing flag
+        self.is_playing = False  # Initialize playback flag
         self.server = Server().boot()
         self.server.start()
+        self.pyo_objects = []  # List to hold Pyo objects for playback
 
         # Set application icon
         icon_path = ".\icons\icon_for_windows.ico"  # Replace with the actual path to your icon file
@@ -129,7 +130,7 @@ class TextToSoundConverterApp(QWidget):
         self.morse_scale_combo.addItems(self.scales.keys())
         self.main_layout.addWidget(self.morse_scale_combo)
 
-        self.sound_type_combo.addItem("morse (select scale)")
+        self.sound_type_combo.addItem("morse")
         self.main_layout.addWidget(self.sound_type_combo)
         self.morse_scale_combo.hide()  # Initially hide the Morse scale combo box
 
@@ -145,7 +146,7 @@ class TextToSoundConverterApp(QWidget):
 
     def update_sound_type(self, index):
         selected_text = self.sound_type_combo.itemText(index)
-        if selected_text == "morse (select scale)":
+        if selected_text == "morse":
             self.morse_scale_combo.show()
         else:
             self.morse_scale_combo.hide()
@@ -162,9 +163,12 @@ class TextToSoundConverterApp(QWidget):
         self.main_layout.addWidget(self.start_button)
 
     def start_playback(self):
+        logging.debug("Start playback function called.")
         if self.is_playing:
+            logging.debug("Stopping playback.")
             self.stop_playback()
         else:
+            logging.debug("Starting playback.")
             text = self.text_entry.toPlainText()
             selected_text = self.get_sound_type()
             if self.selected_sound_file and not self.text_typed_for_current_file:
@@ -179,7 +183,7 @@ class TextToSoundConverterApp(QWidget):
                 self.type_text()
                 self.text_typed_for_current_file = True
             elif not self.selected_sound_file or self.playback_source == 'text':
-                if selected_text == "morse (select scale)":
+                if selected_text == "morse":
                     selected_scale = self.morse_scale_combo.currentText()  # Get the selected scale
                     scale = self.scales[selected_scale]
                     sines = {note: Sine(freq=freq, mul=1) for note, freq in scale.items()}
@@ -187,19 +191,20 @@ class TextToSoundConverterApp(QWidget):
                     play_sequence(sequence, sines)
                     self.is_playing = True
                     self.timer.start(100)
-
+                    logging.debug("Started morse playback.")
                 else:
                     generated_sound = combining_sounds(text, sound_type=selected_text)
                     play_sound(generated_sound, sound_type=selected_text)
                     logging.debug(f"Starting playback for sound type: {selected_text}")
                     self.is_playing = True
                     self.timer.start(100)
+                    logging.debug(f"Started {selected_text} playback.")
 
     def check_status(self):
-        selected_index = self.sound_type_combo.currentIndex()  # Get the current index
-        selected_text = self.sound_type_combo.itemText(selected_index)  # Get the text at that index
-        if selected_text == "morse (select scale)":
-            None
+        logging.debug("Check status function called.")
+        selected_text = self.get_sound_type()
+        if selected_text == "morse":
+            self.stop_playback()
         else: 
             if pygame.mixer.music.get_busy():
                 self.timer.start(100)
@@ -207,12 +212,18 @@ class TextToSoundConverterApp(QWidget):
                 self.stop_playback()
 
     def stop_playback(self):
-        pygame.mixer.music.stop()
-        # Add this line to quit the mixer after stopping the music.
-        pygame.mixer.quit()
+        logging.debug("Stop playback function called.")
+        selected_text = self.get_sound_type()
+        if selected_text == "morse":
+            None
+        else: 
+            if pygame.mixer.get_init():
+                pygame.mixer.music.stop()
+                # Add this line to quit the mixer after stopping the music.
+                pygame.mixer.quit()
+                logging.debug("Mixer quit and playback stopped.")
         self.is_playing = False
         self.timer.stop()
-        logging.debug("Mixer quit and playback stopped.")
 
     def create_download_button(self):
         download_button = QPushButton("Download WAV File", self)
