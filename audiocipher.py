@@ -35,20 +35,34 @@ class TextToSoundConverterApp(QWidget):
 
         # Now use the resolved path to read the scales from the file
         self.scales = read_scales_from_file(scales_frequencies_path)
+
+        final_wav_path = os.path.join(base_dir, 'modulated', 'final.wav')
+        if os.path.exists(final_wav_path):
+            os.remove(final_wav_path)
         
         self.setWindowTitle("Text to Sound Converter")
         self.setGeometry(100, 100, 800, 600)
         
+        self.selected_sound_file = None
 
         self.is_playing = False  # Initialize is_playing flag
         self.server = Server().boot()
         self.server.start()
 
         # Set application icon
-        icon_path = "MusicEncoderIcon.png"  # Replace with the actual path to your icon file
+        icon_path = ".\icons\icon_for_windows.ico"  # Replace with the actual path to your icon file
         self.setWindowIcon(QIcon(icon_path))
 
         self.init_ui()
+
+        self.typing_timer = QTimer(self)
+        self.typing_timer.timeout.connect(self.type_text)
+        self.text_to_type = ""
+        self.text_typed_for_current_file = False
+        self.playback_source = 'text'
+        self.current_typing_pos = 0 
+        self.duration_per_character = 100
+        self.gap_between_words = 200
 
     def init_ui(self):
         # Set a font for the QTextEdit
@@ -137,20 +151,10 @@ class TextToSoundConverterApp(QWidget):
             self.morse_scale_combo.hide()
         self.sound_type = selected_text
 
-    """"
-    def create_pdf_button(self):
-        pdf_button = QPushButton("Open PDF", self)
-        pdf_button.clicked.connect(self.open_pdf)
-        self.main_layout.addWidget(pdf_button)
-
-    def open_pdf(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Open PDF", "", "PDF files (*.pdf)")
-        if file_path:
-            text = extract_text(file_path)
-            self.text_entry.clear()
-            self.text_entry.setPlainText(text)
-    """
-
+    def get_sound_type(self):
+        selected_index = self.sound_type_combo.currentIndex()
+        selected_text = self.sound_type_combo.itemText(selected_index)
+        return selected_text
 
     def create_start_button(self):
         self.start_button = QPushButton("Start/Stop Playback", self)
@@ -162,29 +166,45 @@ class TextToSoundConverterApp(QWidget):
             self.stop_playback()
         else:
             text = self.text_entry.toPlainText()
-            selected_index = self.sound_type_combo.currentIndex()  # Get the current index
-            selected_text = self.sound_type_combo.itemText(selected_index)  # Get the text at that index
-            if selected_text == "morse (select scale)":
-                selected_scale = self.morse_scale_combo.currentText()  # Get the selected scale
-                scale = self.scales[selected_scale]
-                sines = {note: Sine(freq=freq, mul=1) for note, freq in scale.items()}
-                sequence = morse_code_to_musical_sequence(text, scale)
-                play_sequence(sequence, sines)
+            selected_text = self.get_sound_type()
+            if self.selected_sound_file and not self.text_typed_for_current_file:
+                if not pygame.mixer.get_init():
+                    pygame.mixer.init()
+                pygame.mixer.music.load(self.selected_sound_file)
+                pygame.mixer.music.play()
                 self.is_playing = True
                 self.timer.start(100)
+                self.selected_sound_file = None
+                self.text_entry.clear()
+                self.type_text()
+                self.text_typed_for_current_file = True
+            elif not self.selected_sound_file or self.playback_source == 'text':
+                if selected_text == "morse (select scale)":
+                    selected_scale = self.morse_scale_combo.currentText()  # Get the selected scale
+                    scale = self.scales[selected_scale]
+                    sines = {note: Sine(freq=freq, mul=1) for note, freq in scale.items()}
+                    sequence = morse_code_to_musical_sequence(text, scale)
+                    play_sequence(sequence, sines)
+                    self.is_playing = True
+                    self.timer.start(100)
 
-            else:
-                generated_sound = combining_sounds(text, sound_type=selected_text)
-                play_sound(generated_sound, sound_type=selected_text)
-                logging.debug(f"Starting playback for sound type: {selected_text}")
-                self.is_playing = True
-                self.timer.start(100)
+                else:
+                    generated_sound = combining_sounds(text, sound_type=selected_text)
+                    play_sound(generated_sound, sound_type=selected_text)
+                    logging.debug(f"Starting playback for sound type: {selected_text}")
+                    self.is_playing = True
+                    self.timer.start(100)
 
     def check_status(self):
-        if pygame.mixer.music.get_busy():
-            self.timer.start(100)
-        else:
-            self.stop_playback()
+        selected_index = self.sound_type_combo.currentIndex()  # Get the current index
+        selected_text = self.sound_type_combo.itemText(selected_index)  # Get the text at that index
+        if selected_text == "morse (select scale)":
+            None
+        else: 
+            if pygame.mixer.music.get_busy():
+                self.timer.start(100)
+            else:
+                self.stop_playback()
 
     def stop_playback(self):
         pygame.mixer.music.stop()
@@ -203,10 +223,10 @@ class TextToSoundConverterApp(QWidget):
         file_path, _ = QFileDialog.getSaveFileName(self, "Save WAV File", "", "WAV files (*.wav)")
         if file_path:
             text = self.text_entry.toPlainText()  # Use toPlainText() instead of get("1.0", tk.END)
-            generated_sound = combining_sounds(text)
+            generated_sound = combining_sounds(text, sound_type=self.get_sound_type())
 
             self.save_wav(file_path, generated_sound)
-            print(f"Saving .wav file to: {file_path}")
+            #print(f"Saving .wav file to: {file_path}")
 
     def create_sound_file_button(self):
         sound_file_button = QPushButton("Select Sound File", self)
@@ -216,7 +236,25 @@ class TextToSoundConverterApp(QWidget):
     def select_sound_file(self):
         sound_file_path, _ = QFileDialog.getOpenFileName(self, "Select Sound File", "", "Sound Files (*.wav;*.mp3)")
         if sound_file_path:
-            recognize_text_from_sound(sound_file_path)
+            self.selected_sound_file = sound_file_path
+            recognized_text = recognize_text_from_sound(sound_file_path, sound_type=self.get_sound_type())
+            self.text_to_type = recognized_text
+            self.current_typing_pos = 0
+    
+    def type_text(self):
+        if self.current_typing_pos < len(self.text_to_type):
+            next_char = self.text_to_type[self.current_typing_pos]
+
+            self.text_entry.insertPlainText(next_char)
+            self.current_typing_pos += 1
+
+            if next_char == " ":
+                self.typing_timer.start(self.gap_between_words)
+            else:
+                self.typing_timer.start(self.duration_per_character)
+        else:
+            self.typing_timer.stop()
+
 
 if __name__ == "__main__":
     app = QApplication([])
