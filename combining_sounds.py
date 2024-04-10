@@ -10,7 +10,6 @@ import sys, os
 
 
 def resource_path(relative_path):
-    """ Get the absolute path to the resource, works for development and for Py2app """
     import os
     import sys
     if hasattr(sys, 'frozen'):
