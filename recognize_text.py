@@ -14,7 +14,7 @@ def recognize_text_from_sound(sound_file_path, sound_type):
     sound = AudioSegment.from_wav(sound_file_path)
     recognized_text = analyze_audio(sound, sound_map, sound_type)
     logging.debug(f"Recognizing text from sound for sound type: {sound_type}")
-    print("Recognized text:", recognized_text)
+    # print("Recognized text:", recognized_text)
     return recognized_text
 
 def recognize_text_from_mic():
