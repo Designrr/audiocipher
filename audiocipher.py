@@ -14,7 +14,6 @@ from pyo import *
 from combining_sounds import combining_sounds, play_sound
 from recognize_text import recognize_text_from_sound, recognize_text_from_mic
 from morse_playback import read_scales_from_file, morse_code_to_musical_sequence, play_sequence
-from pdfminer.high_level import extract_text
 import os
 
 # Now use logging.debug() instead of print() throughout your script
@@ -50,20 +49,22 @@ class TextToSoundConverterApp(QWidget):
         self.server.start()
         self.pyo_objects = []  # List to hold Pyo objects for playback
 
+        self.selected_sound_file_path = None
+
         # Set application icon
         icon_path = ".\icons\icon_for_windows.ico"  # Replace with the actual path to your icon file
         self.setWindowIcon(QIcon(icon_path))
 
         self.init_ui()
 
-        self.typing_timer = QTimer(self)
+        self.typing_timer = QTimer(self)  # Timer for typing effect
         self.typing_timer.timeout.connect(self.type_text)
-        self.text_to_type = ""
-        self.text_typed_for_current_file = False
-        self.playback_source = 'text'
-        self.current_typing_pos = 0 
-        self.duration_per_character = 100
-        self.gap_between_words = 200
+        self.text_to_type = ""  # Store the text that needs to be typed out
+        self.text_typed_for_current_file = False  # Tracks if text has been typed for the current file
+        self.playback_source = 'text'  # Tracks the source of playback ('file' or 'text')
+        self.current_typing_pos = 0  # Keep track of the current typing position
+        self.duration_per_character = 100  # Duration for each character in ms
+        self.gap_between_words = 200  # Additional gap between words in ms
 
     def init_ui(self):
         # Set a font for the QTextEdit
@@ -244,6 +245,7 @@ class TextToSoundConverterApp(QWidget):
         sound_file_button.clicked.connect(self.select_sound_file)
         self.main_layout.addWidget(sound_file_button)
 
+
     def select_sound_file(self):
         sound_file_path, _ = QFileDialog.getOpenFileName(self, "Select Sound File", "", "Sound Files (*.wav;*.mp3)")
         if sound_file_path:
@@ -264,8 +266,12 @@ class TextToSoundConverterApp(QWidget):
             else:
                 self.typing_timer.start(self.duration_per_character)
         else:
+            # Stop the timer if the entire text has been typed out
             self.typing_timer.stop()
-
+                
+    
+           
+   
 
 if __name__ == "__main__":
     app = QApplication([])
