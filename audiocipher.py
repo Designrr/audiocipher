@@ -14,7 +14,6 @@ from pyo import *
 from combining_sounds import combining_sounds, play_sound
 from recognize_text import recognize_text_from_sound, recognize_text_from_mic
 from morse_playback import read_scales_from_file, morse_code_to_musical_sequence, play_sequence
-from pdfminer.high_level import extract_text
 import os
 
 # Now use logging.debug() instead of print() throughout your script
