@@ -67,8 +67,8 @@ def mapping_sounds(sound_type):
     # Construct full paths for sound files using resource_path to ensure correct paths in all environments
     sounds = {char: resource_path(os.path.join(sounds_base_dir, f"{filename}.wav")) for char, filename in symbol_filenames.items()}
 
-    logging.debug(f"Sounds base directory: {sounds_base_dir}")
-    logging.debug(f"Sound file paths: {sounds}")
+    #logging.debug(f"Sounds base directory: {sounds_base_dir}")
+    #logging.debug(f"Sound file paths: {sounds}")
     return sounds
 
 
@@ -76,7 +76,7 @@ def combining_sounds(text, sound_type):
     sound_file = AudioSegment.silent(duration=0)
 
     # Correctly resolve the path for gap.wav using resource_path
-    gap_sound_path = resource_path(os.path.join(sound_type, 'gap.wav'))
+    gap_sound_path = resource_path(os.path.join(sound_type, 'gap.wav')) #.2 second gap
 
 
 
