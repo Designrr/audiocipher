@@ -9,7 +9,7 @@ class BeepGenerator:
         self.audio = []
         self.sample_rate = 44100.0
 
-    def append_silence(self, duration_milliseconds=500):
+    def append_silence(self, duration_milliseconds=200):
         num_samples = duration_milliseconds * (self.sample_rate / 1000.0)
 
         for x in range(int(num_samples)): 
@@ -136,4 +136,3 @@ if __name__ == "__main__":
 
 
 
-    
