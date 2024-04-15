@@ -72,41 +72,45 @@ class TextToSoundConverterApp(QWidget):
             # Set Stylesheet
         self.setStyleSheet("""
             QWidget {
-                background-color: #f0f0f0;
-                color: #333;
+                background-color: #333;
+                color: white;
             }
             QTextEdit {
                 font-size: 14px;
+                border: 1px solid #b58900;
             }
             QPushButton {
-                background-color: #4579a0;
+                background-color: #b58900;
                 color: white;
                 border: none;
                 padding: 10px 15px;
                 border-radius: 5px;
             }
             QPushButton:hover {
-                background-color: #4591a0;
+                background-color: #e0c000;
             }
             QComboBox {
-                border: 1px solid #ddd;
+                border: 1px solid #b58900;
                 border-radius: 3px;
                 padding: 5px 10px;
                 font-size: 14px;
-                background-color: #eee;
+                background-color: #333;
             }
 
             QComboBox:hover {
-                background-color: #e0e0e0;
+                background-color: #333;
+                border: 1px solid 
             }
 
             QComboBox:focus {
-                border-color: #999;
+                border-color: #b58900;
+                background-color: #333;
             }
 
              QComboBox:on {
                 /* Optional: style for the selected item */
-                background-color: #ddd;
+                background-color: #333;
+                border: 1px solid #b58900
             }   
         """)
 

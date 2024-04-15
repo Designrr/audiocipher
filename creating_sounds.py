@@ -7,7 +7,7 @@ class BeepGenerator:
         self.audio = []
         self.sample_rate = 44100.0
 
-    def append_silence(self, duration_milliseconds=500):
+    def append_silence(self, duration_milliseconds=200):
         num_samples = duration_milliseconds * (self.sample_rate / 1000.0)
         print("num1: ", num_samples)
 
@@ -19,7 +19,7 @@ class BeepGenerator:
     def append_sinewave(
         self,
         freq, 
-        duration_milliseconds=500, 
+        duration_milliseconds=100, 
         volume=1.0):
         print(freq)
         num_samples = duration_milliseconds * (self.sample_rate / 1000.0)
@@ -105,4 +105,3 @@ if __name__ == "__main__":
     bg.append_sinewave(freq=0, volume=0.5, duration_milliseconds=500)
     bg.save_wav(f"{sound_folder}/silence.wav")
 
-    
