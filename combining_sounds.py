@@ -72,13 +72,11 @@ def mapping_sounds(sound_type):
     return sounds
 
 
-def combining_sounds(text, sound_type):
+def combining_sounds(text, sound_type, volume=1.0):
     sound_file = AudioSegment.silent(duration=0)
 
     # Correctly resolve the path for gap.wav using resource_path
     gap_sound_path = resource_path(os.path.join(sound_type, 'gap.wav')) #.2 second gap
-
-
 
     words = text.split()
     for i, word in enumerate(words):
@@ -99,7 +97,11 @@ def combining_sounds(text, sound_type):
         if i < len(words) - 1:
             sound_file += AudioSegment.from_wav(gap_sound_path)
 
+    # Adjust the volume of the entire final sound file
+    sound_file = sound_file + volume
+
     return sound_file
+
 
 import pygame
 

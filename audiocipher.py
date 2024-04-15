@@ -16,7 +16,6 @@ from recognize_text import recognize_text_from_sound, recognize_text_from_mic
 from morse_playback import read_scales_from_file, morse_code_to_musical_sequence, play_sequence
 import os
 
-# Now use logging.debug() instead of print() throughout your script
 logging.debug(os.environ)
 
 
