@@ -234,6 +234,7 @@ class TextToSoundConverterApp(QWidget):
                     self.is_playing = True
                     self.timer.start(100)
                     logging.debug(f"Started {selected_text} playback.")
+                    #print("recognized text:", recognize_text_from_sound(f"{selected_text}/final.wav", sound_type=selected_text))
 
     def check_status(self):
         logging.debug("Check status function called.")

@@ -72,7 +72,7 @@ def mapping_sounds(sound_type):
     return sounds
 
 
-def combining_sounds(text, sound_type, volume=1.0):
+def combining_sounds(text, sound_type):
     sound_file = AudioSegment.silent(duration=0)
 
     # Correctly resolve the path for gap.wav using resource_path
@@ -91,14 +91,14 @@ def combining_sounds(text, sound_type, volume=1.0):
 
             # Check if it's the last letter of the last word
             if i == len(words) - 1 and j == len(word) - 1:
-                break  # Skip adding silent interval after the last letter
+                break  # Skip adding gap/silence after the last letter
 
-        # Add silent interval between words
+        # Add gap/silence between words
         if i < len(words) - 1:
             sound_file += AudioSegment.from_wav(gap_sound_path)
 
     # Adjust the volume of the entire final sound file
-    sound_file = sound_file + volume
+    sound_file = sound_file
 
     return sound_file
 
