@@ -12,7 +12,7 @@ from PyQt5.QtCore import QTimer
 import pygame
 from pyo import *
 from combining_sounds import combining_sounds, play_sound
-from recognize_text import recognize_text_from_sound, recognize_text_from_mic
+from recognize_text import recognize_text_from_sound
 from morse_playback import read_scales_from_file, morse_code_to_musical_sequence, play_sequence
 import os
 
