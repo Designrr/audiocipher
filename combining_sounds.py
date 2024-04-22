@@ -78,8 +78,6 @@ def combining_sounds(text, sound_type):
     # Correctly resolve the path for gap.wav using resource_path
     gap_sound_path = resource_path(os.path.join(sound_type, 'gap.wav')) #.2 second gap
 
-
-
     words = text.split()
     for i, word in enumerate(words):
         for j, letter in enumerate(word):
@@ -93,13 +91,17 @@ def combining_sounds(text, sound_type):
 
             # Check if it's the last letter of the last word
             if i == len(words) - 1 and j == len(word) - 1:
-                break  # Skip adding silent interval after the last letter
+                break  # Skip adding gap/silence after the last letter
 
-        # Add silent interval between words
+        # Add gap/silence between words
         if i < len(words) - 1:
             sound_file += AudioSegment.from_wav(gap_sound_path)
 
+    # Adjust the volume of the entire final sound file
+    sound_file = sound_file
+
     return sound_file
+
 
 import pygame
 
