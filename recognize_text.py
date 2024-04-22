@@ -78,12 +78,10 @@ def analyze_audio(sound, sound_map, sound_type):
     consecutive_zeros = 0  # Counter for consecutive zeros
     window_size = 100  # Assuming sound files are 0.1 seconds long
 
-    if sound_type == "modulated":
-        gap_frequency = 495
-    elif sound_type =="beeps":
-        gap_frequency = 490
+    if sound_type == "beeps" or sound_type == "modulated":
+        gap_frequency = 500
     elif sound_type == "non_human":
-        gap_frequency = 20890
+        gap_frequency = 20900
     
     if sound_type == "morse":
         segment
@@ -107,7 +105,7 @@ def analyze_audio(sound, sound_map, sound_type):
                 # Check if dominant frequency is zero or if the segment is silence
                 if dominant_frequency < gap_frequency:
                     consecutive_zeros += 1
-                    if consecutive_zeros == 1:  # Only add a space for the first zero/gap frequency encountered
+                    if consecutive_zeros == 1:  # Only add a space for the first zero frequency encountered
                         recognized_text += ' '  # Add a space
                 else:
                     consecutive_zeros = 0  # Reset the counter since we have a non-zero frequency

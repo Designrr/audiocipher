@@ -8,7 +8,7 @@ environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QPushButton, QFileDialog, QComboBox
 from PyQt5.QtGui import QFont, QIcon
-from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtCore import QTimer
 import pygame
 from pyo import *
 from combining_sounds import combining_sounds, play_sound
@@ -16,25 +16,8 @@ from recognize_text import recognize_text_from_sound, recognize_text_from_mic
 from morse_playback import read_scales_from_file, morse_code_to_musical_sequence, play_sequence
 import os
 
+# Now use logging.debug() instead of print() throughout your script
 logging.debug(os.environ)
-
-class CustomTitleBar(QWidget):
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setAutoFillBackground(True)
-        p = self.palette()
-        p.setColor(self.backgroundRole(), Qt.darkYellow)  # Set background color
-        self.setPalette(p)
-        self.setFixedHeight(30)  # Set height of the title bar
-        
-        # Add close button
-        self.close_button = QPushButton("X", self)
-        self.close_button.setGeometry(self.width() - -635, 0, 40, 30)  # Position the close button
-        self.close_button.clicked.connect(self.close_window)
-
-    def close_window(self):
-        if self.parentWidget():
-            self.parentWidget().close()  # Close the parent widget (i.e., the main window)
 
 
 class TextToSoundConverterApp(QWidget):
@@ -58,8 +41,6 @@ class TextToSoundConverterApp(QWidget):
         
         self.setWindowTitle("Text to Sound Converter")
         self.setGeometry(100, 100, 800, 600)
-
-        
         
         self.selected_sound_file = None
 
@@ -86,62 +67,47 @@ class TextToSoundConverterApp(QWidget):
         self.gap_between_words = 200  # Additional gap between words in ms
 
     def init_ui(self):
-        # Remove the default title bar provided by the operating system
-        self.setWindowFlags(Qt.FramelessWindowHint)  # Remove all window decorations
-
-        self.main_layout = QVBoxLayout(self)
-        
-        # Create custom title bar
-        self.title_bar = CustomTitleBar(self)
-
-        # Add the custom title bar to the top of the main layout
-        self.main_layout.addWidget(self.title_bar)
-
         # Set a font for the QTextEdit
         font = QFont()
         font.setPointSize(12)
             # Set Stylesheet
         self.setStyleSheet("""
             QWidget {
-                background-color: #333;
-                color: white;
+                background-color: #f0f0f0;
+                color: #333;
             }
             QTextEdit {
                 font-size: 14px;
-                border: 1px solid #b58900;
             }
             QPushButton {
-                background-color: #b58900;
+                background-color: #4579a0;
                 color: white;
                 border: none;
                 padding: 10px 15px;
                 border-radius: 5px;
             }
             QPushButton:hover {
-                background-color: #e0c000;
+                background-color: #4591a0;
             }
             QComboBox {
-                border: 1px solid #b58900;
+                border: 1px solid #ddd;
                 border-radius: 3px;
                 padding: 5px 10px;
                 font-size: 14px;
-                background-color: #333;
+                background-color: #eee;
             }
 
             QComboBox:hover {
-                background-color: #333;
-                border: 1px solid 
+                background-color: #e0e0e0;
             }
 
             QComboBox:focus {
-                border-color: #b58900;
-                background-color: #333;
+                border-color: #999;
             }
 
              QComboBox:on {
                 /* Optional: style for the selected item */
-                background-color: #333;
-                border: 1px solid #b58900
+                background-color: #ddd;
             }   
         """)
 
@@ -151,8 +117,8 @@ class TextToSoundConverterApp(QWidget):
         self.text_entry.setFont(font)
         self.text_entry.setPlaceholderText("Enter your text here...")
 
+        self.main_layout = QVBoxLayout(self)
         self.main_layout.addWidget(self.text_entry)
-
 
         # Create dropdown menu
         self.sound_type_combo = QComboBox(self)
@@ -234,7 +200,6 @@ class TextToSoundConverterApp(QWidget):
                     self.is_playing = True
                     self.timer.start(100)
                     logging.debug(f"Started {selected_text} playback.")
-                    #print("recognized text:", recognize_text_from_sound(f"{selected_text}/final.wav", sound_type=selected_text))
 
     def check_status(self):
         logging.debug("Check status function called.")
