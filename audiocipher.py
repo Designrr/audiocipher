@@ -8,16 +8,52 @@ environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit, QPushButton, QFileDialog, QComboBox
 from PyQt5.QtGui import QFont, QIcon
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, Qt
 import pygame
-from pyo import *
+import sys
 from combining_sounds import combining_sounds, play_sound
-from recognize_text import recognize_text_from_sound, recognize_text_from_mic
-from morse_playback import read_scales_from_file, morse_code_to_musical_sequence, play_sequence
+from recognize_text import recognize_text_from_sound
+from morse_playback import read_scales_from_file, morse_code_to_musical_sequence, generate_audio_from_sequence
 import os
+import shutil
+import atexit
 
-# Now use logging.debug() instead of print() throughout your script
 logging.debug(os.environ)
+
+class CustomTitleBar(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setAutoFillBackground(True)
+        p = self.palette()
+        p.setColor(self.backgroundRole(), Qt.darkYellow)  # Set background color
+        self.setPalette(p)
+        self.setFixedHeight(15)  # Set height of the title bar
+
+        # Mouse dragging functionality
+        self.is_dragging = False
+        self.drag_start_position = None
+
+        # Add close button
+        self.close_button = QPushButton("x", self)
+        self.close_button.setGeometry(self.width() - -645, 0, 20, 10)
+        self.close_button.clicked.connect(self.close_window)
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.is_dragging = True
+            self.drag_start_position = event.globalPos() - self.parentWidget().frameGeometry().topLeft()
+
+    def mouseMoveEvent(self, event):
+        if self.is_dragging and event.buttons() == Qt.LeftButton:
+            self.parentWidget().move(event.globalPos() - self.drag_start_position)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.is_dragging = False
+
+    def close_window(self):
+        if self.parentWidget():
+            self.parentWidget().close()
 
 
 class TextToSoundConverterApp(QWidget):
@@ -27,17 +63,20 @@ class TextToSoundConverterApp(QWidget):
         # Define the base directory for file paths
         # If the application is frozen (i.e., packaged by PyInstaller), use sys._MEIPASS
         # Otherwise, use the directory of this script file
-        base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+        self.base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+
+        audio_types = ['modulated', 'morse', 'non_human']
+        for audio_type in audio_types:
+            final_wav_path = os.path.join(self.base_dir, audio_type, 'final.wav')
+            if os.path.exists(final_wav_path):
+                os.remove(final_wav_path)
+                print(f"Deleted {final_wav_path}")   
 
         # Construct the path to the scales_frequencies.txt file
-        scales_frequencies_path = os.path.join(base_dir, 'morse', 'scales_frequencies.txt')
+        scales_frequencies_path = os.path.join(self.base_dir, 'morse', 'scales_frequencies.txt')
 
         # Now use the resolved path to read the scales from the file
         self.scales = read_scales_from_file(scales_frequencies_path)
-
-        final_wav_path = os.path.join(base_dir, 'modulated', 'final.wav')
-        if os.path.exists(final_wav_path):
-            os.remove(final_wav_path)
         
         self.setWindowTitle("Text to Sound Converter")
         self.setGeometry(100, 100, 800, 600)
@@ -45,9 +84,6 @@ class TextToSoundConverterApp(QWidget):
         self.selected_sound_file = None
 
         self.is_playing = False  # Initialize playback flag
-        self.server = Server().boot()
-        self.server.start()
-        self.pyo_objects = []  # List to hold Pyo objects for playback
 
         self.selected_sound_file_path = None
 
@@ -67,47 +103,62 @@ class TextToSoundConverterApp(QWidget):
         self.gap_between_words = 200  # Additional gap between words in ms
 
     def init_ui(self):
+        # Remove the default title bar provided by the operating system
+        self.setWindowFlags(Qt.FramelessWindowHint)  # Remove all window decorations
+
+        self.main_layout = QVBoxLayout(self)
+        
+        # Create custom title bar
+        self.title_bar = CustomTitleBar(self)
+
+        # Add the custom title bar to the top of the main layout
+        self.main_layout.addWidget(self.title_bar)
+
         # Set a font for the QTextEdit
         font = QFont()
         font.setPointSize(12)
             # Set Stylesheet
         self.setStyleSheet("""
             QWidget {
-                background-color: #f0f0f0;
-                color: #333;
+                background-color: #333;
+                color: white;
             }
             QTextEdit {
                 font-size: 14px;
+                border: 1px solid #b58900;
             }
             QPushButton {
-                background-color: #4579a0;
+                background-color: #b58900;
                 color: white;
                 border: none;
                 padding: 10px 15px;
                 border-radius: 5px;
             }
             QPushButton:hover {
-                background-color: #4591a0;
+                background-color: #e0c000;
             }
             QComboBox {
-                border: 1px solid #ddd;
+                border: 1px solid #b58900;
                 border-radius: 3px;
                 padding: 5px 10px;
                 font-size: 14px;
-                background-color: #eee;
+                background-color: #333;
             }
 
             QComboBox:hover {
-                background-color: #e0e0e0;
+                background-color: #333;
+                border: 1px solid 
             }
 
             QComboBox:focus {
-                border-color: #999;
+                border-color: #b58900;
+                background-color: #333;
             }
 
              QComboBox:on {
                 /* Optional: style for the selected item */
-                background-color: #ddd;
+                background-color: #333;
+                border: 1px solid #b58900
             }   
         """)
 
@@ -117,13 +168,13 @@ class TextToSoundConverterApp(QWidget):
         self.text_entry.setFont(font)
         self.text_entry.setPlaceholderText("Enter your text here...")
 
-        self.main_layout = QVBoxLayout(self)
         self.main_layout.addWidget(self.text_entry)
+
 
         # Create dropdown menu
         self.sound_type_combo = QComboBox(self)
         self.sound_type_combo.addItem("modulated")
-        self.sound_type_combo.addItem("beeps")
+        #self.sound_type_combo.addItem("beeps")
         self.sound_type_combo.addItem("non_human")
         
         # Morse dropdown
@@ -172,9 +223,9 @@ class TextToSoundConverterApp(QWidget):
             logging.debug("Starting playback.")
             text = self.text_entry.toPlainText()
             selected_text = self.get_sound_type()
+            if not pygame.mixer.get_init():
+                pygame.mixer.init()
             if self.selected_sound_file and not self.text_typed_for_current_file:
-                if not pygame.mixer.get_init():
-                    pygame.mixer.init()
                 pygame.mixer.music.load(self.selected_sound_file)
                 pygame.mixer.music.play()
                 self.is_playing = True
@@ -187,11 +238,18 @@ class TextToSoundConverterApp(QWidget):
                 if selected_text == "morse":
                     selected_scale = self.morse_scale_combo.currentText()  # Get the selected scale
                     scale = self.scales[selected_scale]
-                    sines = {note: Sine(freq=freq, mul=1) for note, freq in scale.items()}
                     sequence = morse_code_to_musical_sequence(text, scale)
-                    play_sequence(sequence, sines)
+                    audio = generate_audio_from_sequence(sequence, scale)
+                    audio_file_path = self.resource_path(os.path.join(self.get_sound_type(), 'final.wav'))
+                    audio.export(audio_file_path, format="wav")
+
+                    # Play the audio file using Pygame
+                    pygame.mixer.music.load(audio_file_path)
+                    pygame.mixer.music.play()
+                    
+                    # Track the playback status
                     self.is_playing = True
-                    self.timer.start(100)
+                    self.timer.start(100)  # You might adjust or remove this timer depending on how you handle playback checking
                     logging.debug("Started morse playback.")
                 else:
                     generated_sound = combining_sounds(text, sound_type=selected_text)
@@ -200,23 +258,24 @@ class TextToSoundConverterApp(QWidget):
                     self.is_playing = True
                     self.timer.start(100)
                     logging.debug(f"Started {selected_text} playback.")
+                    #print("recognized text:", recognize_text_from_sound(f"{selected_text}/final.wav", sound_type=selected_text))
 
     def check_status(self):
         logging.debug("Check status function called.")
         selected_text = self.get_sound_type()
-        if selected_text == "morse":
+        if pygame.mixer.music.get_busy():
+            self.timer.start(100)
+        else:
             self.stop_playback()
-        else: 
-            if pygame.mixer.music.get_busy():
-                self.timer.start(100)
-            else:
-                self.stop_playback()
 
     def stop_playback(self):
         logging.debug("Stop playback function called.")
         selected_text = self.get_sound_type()
         if selected_text == "morse":
-            None
+            if pygame.mixer.get_init():
+                pygame.mixer.music.stop()
+                pygame.mixer.quit()
+                logging.debug("Mixer quit and playback stopped.")
         else: 
             if pygame.mixer.get_init():
                 pygame.mixer.music.stop()
@@ -232,13 +291,21 @@ class TextToSoundConverterApp(QWidget):
         self.main_layout.addWidget(download_button)
 
     def download_wav_file(self):
+        # Open a file dialog to get the location where the user wants to save the file
         file_path, _ = QFileDialog.getSaveFileName(self, "Save WAV File", "", "WAV files (*.wav)")
         if file_path:
-            text = self.text_entry.toPlainText()  # Use toPlainText() instead of get("1.0", tk.END)
-            generated_sound = combining_sounds(text, sound_type=self.get_sound_type())
-
-            self.save_wav(file_path, generated_sound)
-            #print(f"Saving .wav file to: {file_path}")
+            # Get the full path to the existing 'final.wav' based on the selected sound type
+            source_path = os.path.join(self.base_dir, f'{self.get_sound_type()}', 'final.wav')
+            
+            # Check if the source file exists
+            if os.path.exists(source_path):
+                # Copy the file to the new location specified by the user
+                shutil.copy(source_path, file_path)
+                logging.debug(f"File saved successfully to: {file_path}")
+            else:
+                logging.debug("Source file does not exist.")
+        else:
+            logging.debug("File save operation canceled.")
 
     def create_sound_file_button(self):
         sound_file_button = QPushButton("Select Sound File", self)
@@ -268,10 +335,20 @@ class TextToSoundConverterApp(QWidget):
         else:
             # Stop the timer if the entire text has been typed out
             self.typing_timer.stop()
-                
-    
+
+    def resource_path(self, relative_path):
+        """ Get the absolute path to the resource, works for development and for Py2app """
+        import os
+        import sys
+        if hasattr(sys, 'frozen'):
+            # Path when running in a Py2app bundle
+            return os.path.join(sys._MEIPASS, relative_path)
+        else:
+            # Path when running in a development environment
+            return os.path.join(os.path.abspath("."), relative_path)
+                 
            
-   
+
 
 if __name__ == "__main__":
     app = QApplication([])
