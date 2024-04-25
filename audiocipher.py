@@ -65,7 +65,7 @@ class TextToSoundConverterApp(QWidget):
         # Otherwise, use the directory of this script file
         self.base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
 
-        audio_types = ['modulated', 'beeps', 'morse', 'non_human']
+        audio_types = ['modulated', 'morse', 'non_human']
         for audio_type in audio_types:
             final_wav_path = os.path.join(self.base_dir, audio_type, 'final.wav')
             if os.path.exists(final_wav_path):
@@ -174,7 +174,7 @@ class TextToSoundConverterApp(QWidget):
         # Create dropdown menu
         self.sound_type_combo = QComboBox(self)
         self.sound_type_combo.addItem("modulated")
-        self.sound_type_combo.addItem("beeps")
+        #self.sound_type_combo.addItem("beeps")
         self.sound_type_combo.addItem("non_human")
         
         # Morse dropdown
