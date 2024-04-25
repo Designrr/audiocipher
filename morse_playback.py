@@ -1,6 +1,7 @@
-from pyo import *
-import random 
+import random
 import time
+from pydub import AudioSegment
+from pydub.generators import Sine
 
 # Function to read scales and frequencies from a text file
 def read_scales_from_file(file_path):
@@ -23,7 +24,6 @@ morse_code = {
     '5': '.....', '6': '-....', '7': '--...', '8': '---..', '9': '----.'
 }
 
-
 # Convert Morse code to a sequence of notes and durations
 def morse_code_to_musical_sequence(message, scale):
     sequence = []
@@ -39,16 +39,16 @@ def morse_code_to_musical_sequence(message, scale):
     sequence.append(('C', 0.5))
     return sequence
 
-# Function to play a note
-def play_note(note, duration, sines):
-    sines[note].out()
-    time.sleep(duration)
-    sines[note].stop()
-
-# Play the musical sequence
-def play_sequence(sequence, sines):
+# Generate the audio for a sequence of notes
+def generate_audio_from_sequence(sequence, scale):
+    total_audio = AudioSegment.silent(duration=0)  # Start with a silent segment
     for note, duration in sequence:
         if note == 'R':
-            time.sleep(duration)
+            silence_duration = int(duration * 1000)  # Convert to milliseconds
+            total_audio += AudioSegment.silent(duration=silence_duration)
         else:
-            play_note(note, duration, sines)
+            frequency = scale[note]
+            tone_duration = int(duration * 1000)  # Convert to milliseconds
+            tone = Sine(frequency).to_audio_segment(duration=tone_duration)
+            total_audio += tone
+    return total_audio
