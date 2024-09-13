@@ -75,6 +75,7 @@ def analyze_audio(sound, sound_map, sound_type):
 
     return recognized_text
 
+""""
 def analyze_morse_audio(sound_file):
     morse_code = decode_morse_from_audio(sound_file)
     return translate_morse_to_text(morse_code)
@@ -118,9 +119,9 @@ def decode_morse_from_audio(file_path):
     return morse_code
 
 def translate_morse_to_text(morse_code):
-    """
-    Translate Morse code to text using the Morse code dictionary.
-    """
+
+    #Translate Morse code to text using the Morse code dictionary.
+
     morse_to_text = {
         '.-': 'A', '-...': 'B', '-.-.': 'C', '-..': 'D', '.': 'E', '..-.': 'F',
         '--.': 'G', '....': 'H', '..': 'I', '.---': 'J', '-.-': 'K', '.-..': 'L',
@@ -138,3 +139,4 @@ def translate_morse_to_text(morse_code):
         translated_word = ''.join(morse_to_text.get(letter) for letter in letters if letter in morse_to_text)
         words.append(translated_word)
     return ' '.join(words)
+"""
