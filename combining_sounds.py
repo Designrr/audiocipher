@@ -1,9 +1,8 @@
 import logging
 
-# Setup logging
+
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Rest of your imports
 from pydub import AudioSegment
 import pygame
 import sys, os
@@ -21,7 +20,6 @@ def resource_path(relative_path):
         return os.path.join(os.path.abspath("."), relative_path)
 
 def mapping_sounds(sound_type):
-    # Use the resource_path function to get the correct path to the sound_type directory
     sounds_base_dir = resource_path(sound_type)
 
     letters = 'abcdefghijklmnopqrstuvwxyz'
@@ -67,8 +65,6 @@ def mapping_sounds(sound_type):
     # Construct full paths for sound files using resource_path to ensure correct paths in all environments
     sounds = {char: resource_path(os.path.join(sounds_base_dir, f"{filename}.wav")) for char, filename in symbol_filenames.items()}
 
-    #logging.debug(f"Sounds base directory: {sounds_base_dir}")
-    #logging.debug(f"Sound file paths: {sounds}")
     return sounds
 
 

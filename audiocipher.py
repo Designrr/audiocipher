@@ -2,7 +2,7 @@ import logging
 
 # Setup logging at the top
 logging.basicConfig(filename='app.log', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-
+logging.debug(os.environ)
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 
@@ -18,7 +18,8 @@ import os
 import shutil
 import atexit
 
-logging.debug(os.environ)
+
+
 
 class CustomTitleBar(QWidget):
     def __init__(self, parent=None):
@@ -29,11 +30,11 @@ class CustomTitleBar(QWidget):
         self.setPalette(p)
         self.setFixedHeight(15)  # Set height of the title bar
 
-        # Mouse dragging functionality
+        # adds ability to move app with mouse
         self.is_dragging = False
         self.drag_start_position = None
 
-        # Add close button
+        # close button
         self.close_button = QPushButton("x", self)
         self.close_button.setGeometry(self.width() - -645, 0, 20, 10)
         self.close_button.clicked.connect(self.close_window)
@@ -61,8 +62,6 @@ class TextToSoundConverterApp(QWidget):
         super().__init__()
 
         # Define the base directory for file paths
-        # If the application is frozen (i.e., packaged by PyInstaller), use sys._MEIPASS
-        # Otherwise, use the directory of this script file
         self.base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
 
         audio_types = ['modulated', 'morse', 'non_human']
@@ -72,10 +71,10 @@ class TextToSoundConverterApp(QWidget):
                 os.remove(final_wav_path)
                 print(f"Deleted {final_wav_path}")   
 
-        # Construct the path to the scales_frequencies.txt file
+        # path to frequencies file
         scales_frequencies_path = os.path.join(self.base_dir, 'morse', 'scales_frequencies.txt')
 
-        # Now use the resolved path to read the scales from the file
+        # get scales from the file
         self.scales = read_scales_from_file(scales_frequencies_path)
         
         self.setWindowTitle("Text to Sound Converter")
@@ -83,24 +82,24 @@ class TextToSoundConverterApp(QWidget):
         
         self.selected_sound_file = None
 
-        self.is_playing = False  # Initialize playback flag
+        self.is_playing = False  # Initial playback flag
 
         self.selected_sound_file_path = None
 
         # Set application icon
-        icon_path = ".\icons\icon_for_windows.ico"  # Replace with the actual path to your icon file
+        icon_path = ".\icons\icon_for_windows.ico"
         self.setWindowIcon(QIcon(icon_path))
 
         self.init_ui()
 
-        self.typing_timer = QTimer(self)  # Timer for typing effect
+        self.typing_timer = QTimer(self) 
         self.typing_timer.timeout.connect(self.type_text)
-        self.text_to_type = ""  # Store the text that needs to be typed out
-        self.text_typed_for_current_file = False  # Tracks if text has been typed for the current file
-        self.playback_source = 'text'  # Tracks the source of playback ('file' or 'text')
-        self.current_typing_pos = 0  # Keep track of the current typing position
-        self.duration_per_character = 100  # Duration for each character in ms
-        self.gap_between_words = 200  # Additional gap between words in ms
+        self.text_to_type = "" 
+        self.text_typed_for_current_file = False 
+        self.playback_source = 'text'  
+        self.current_typing_pos = 0  
+        self.duration_per_character = 100  
+        self.gap_between_words = 200 
 
     def init_ui(self):
         # Remove the default title bar provided by the operating system
@@ -171,20 +170,20 @@ class TextToSoundConverterApp(QWidget):
         self.main_layout.addWidget(self.text_entry)
 
 
-        # Create dropdown menu
+        # dropdown menu
         self.sound_type_combo = QComboBox(self)
         self.sound_type_combo.addItem("modulated")
         #self.sound_type_combo.addItem("beeps")
         self.sound_type_combo.addItem("non_human")
         
-        # Morse dropdown
+        # morse dropdown
         self.morse_scale_combo = QComboBox(self)
         self.morse_scale_combo.addItems(self.scales.keys())
         self.main_layout.addWidget(self.morse_scale_combo)
 
         self.sound_type_combo.addItem("morse")
         self.main_layout.addWidget(self.sound_type_combo)
-        self.morse_scale_combo.hide()  # Initially hide the Morse scale combo box
+        self.morse_scale_combo.hide()
 
         self.sound_type_combo.currentIndexChanged.connect(self.update_sound_type)
 
@@ -249,7 +248,7 @@ class TextToSoundConverterApp(QWidget):
                     
                     # Track the playback status
                     self.is_playing = True
-                    self.timer.start(100)  # You might adjust or remove this timer depending on how you handle playback checking
+                    self.timer.start(100) 
                     logging.debug("Started morse playback.")
                 else:
                     generated_sound = combining_sounds(text, sound_type=selected_text)
@@ -279,7 +278,6 @@ class TextToSoundConverterApp(QWidget):
         else: 
             if pygame.mixer.get_init():
                 pygame.mixer.music.stop()
-                # Add this line to quit the mixer after stopping the music.
                 pygame.mixer.quit()
                 logging.debug("Mixer quit and playback stopped.")
         self.is_playing = False
